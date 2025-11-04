@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Launcher ETHERNAL</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: url('fondo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .panel {
+      width: 340px;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 4px 0 25px rgba(255, 255, 255, 0.2);
+      animation: slideIn 1.2s ease forwards;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(-200px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .logo {
+      width: 90px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 10px white);
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      text-shadow: 0 0 12px white;
+      letter-spacing: 1px;
+    }
+
+    .server-option {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    .server-option:hover {
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 18px white;
+      transform: scale(1.03);
+    }
+
+    .server-option img {
+      width: 55px;
+      height: 55px;
+      border-radius: 8px;
+    }
+
+    .server-option span {
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .fade {
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .play-button {
+      margin-top: 30px;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #000;
+      background: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 18px white;
+      transition: all 0.3s ease;
+    }
+
+    .play-button:hover {
+      background: #00c3ff;
+      color: white;
+      box-shadow: 0 0 25px #00c3ff;
+    }
+
+    .loading-bar {
+      width: 0%;
+      height: 8px;
+      background: white;
+      border-radius: 4px;
+      margin-top: 15px;
+      transition: width 2s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="panel">
+    <img src="logo.png" alt="Logo ETHERNAL" class="logo" />
+    <h1>Launcher ETHERNAL</h1>
+
+    <div class="server-option" onclick="selectServer('pesadilla')">
+      <img src="corazon.png" alt="Pesadilla Hardcore" />
+      <span>Pesadilla Hardcore</span>
+    </div>
+
+    <div class="server-option" onclick="selectServer('build')">
+      <img src="buildbattle.png" alt="Build Ethernal Battle" />
+      <span>Build Ethernal Battle</span>
+    </div>
+
+    <button class="play-button" onclick="startGame()">Iniciar Juego</button>
+    <div class="loading-bar" id="loadingBar"></div>
+  </div>
+
+  <script>
+    let selectedServer = null;
+
+    function selectServer(server) {
+      selectedServer = server;
+      document.querySelectorAll('.server-option').forEach(opt => {
+        opt.style.boxShadow = 'none';
+      });
+      event.currentTarget.style.boxShadow = '0 0 25px white';
+    }
+
+    function startGame() {
+      if (!selectedServer) {
+        alert("Selecciona un evento primero.");
+        return;
+      }
+
+      const bar = document.getElementById('loadingBar');
+      bar.style.width = '100%';
+
+      setTimeout(() => {
+        bar.style.width = '0%';
+        if (selectedServer === 'pesadilla') {
+          window.location.href = "minecraft://?addExternalServer=Pesadilla%20Hardcore|na81.aternos.me:60240";
+        } else if (selectedServer === 'build') {
+          window.location.href = "minecraft://?addExternalServer=Build%20Ethernal%20Battle|na81.aternos.me:60240";
+        }
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>
