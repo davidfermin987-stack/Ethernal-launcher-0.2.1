@@ -3,183 +3,283 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Launcher ETHERNAL</title>
+  <title>Ethernal Client 0.1</title>
+  <link rel="icon" href="🔥" />
+  <script src="https://alcdn.msauth.net/browser/2.37.0/js/msal-browser.min.js"></script>
   <style>
+    /* (TODO tu CSS se mantiene exactamente igual, sin cambios) */
     body {
       margin: 0;
-      height: 100vh;
-      background: url('fondo.jpg') no-repeat center center fixed;
+      padding: 0;
+      background: url('fondo_default.jpg') no-repeat center center fixed;
       background-size: cover;
-      font-family: 'Poppins', sans-serif;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
-    .panel {
-      width: 340px;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(10px);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 4px 0 25px rgba(255, 255, 255, 0.2);
-      animation: slideIn 1.2s ease forwards;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(-200px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    .logo {
-      width: 90px;
-      height: auto;
-      margin-bottom: 15px;
-      filter: drop-shadow(0 0 10px white);
-      animation: fadeIn 1.5s ease forwards;
-    }
-
-    h1 {
+      font-family: 'Segoe UI', sans-serif;
       color: white;
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 30px;
-      text-shadow: 0 0 12px white;
-      letter-spacing: 1px;
+      overflow: hidden;
+      transition: background 1s ease-in-out;
     }
-
-    .server-option {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      animation: fadeIn 1.5s ease forwards;
-    }
-
-    .server-option:hover {
-      background: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 18px white;
-      transform: scale(1.03);
-    }
-
-    .server-option img {
-      width: 55px;
-      height: 55px;
-      border-radius: 8px;
-    }
-
-    .server-option span {
-      color: white;
-      font-size: 1.1rem;
-      font-weight: 500;
-    }
-
-    .fade {
-      opacity: 0;
-      animation: fadeIn 2s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .play-button {
-      margin-top: 30px;
-      padding: 15px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #000;
-      background: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      box-shadow: 0 0 18px white;
-      transition: all 0.3s ease;
-    }
-
-    .play-button:hover {
-      background: #00c3ff;
-      color: white;
-      box-shadow: 0 0 25px #00c3ff;
-    }
-
-    .loading-bar {
-      width: 0%;
-      height: 8px;
-      background: white;
-      border-radius: 4px;
-      margin-top: 15px;
-      transition: width 2s ease;
-    }
+    .fade { opacity: 0; transition: opacity 1s ease-in-out; }
+    .fade.show { opacity: 1; }
+    #logo { width: 450px; margin-top: 60px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.4)); transition: opacity 1s ease-in-out; }
+    #event-logo { display: none; width: 400px; margin: 80px auto 20px; transition: opacity 1s ease-in-out; }
+    .event-panel { position: fixed; top: 0; left: 0; height: 100vh; width: 120px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(6px); display: flex; flex-direction: column; align-items: center; justify-content: start; padding-top: 30px; box-shadow: 2px 0 10px rgba(0,0,0,0.4); }
+    .event-selector { display: flex; flex-direction: column; gap: 25px; position: relative; }
+    .event-icon { width: 80px; height: 80px; background-color: rgba(0, 0, 0, 0.3); border-radius: 15px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
+    .event-icon:hover, .event-icon.active { background-color: rgba(0, 0, 0, 0.6); border: 2px solid #00bfff; transform: scale(1.1); }
+    #addInstance { width: 60px; height: 60px; border-radius: 50%; font-size: 40px; background-color: rgba(0, 0, 0, 0.5); border: 2px solid #00bfff; color: white; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; }
+    #addInstance:hover { background-color: rgba(0, 0, 0, 0.8); transform: scale(1.1); }
+    #playButton { background-color: rgba(0, 0, 60, 0.7); border: none; padding: 18px 90px; font-size: 22px; color: white; border-radius: 15px; cursor: pointer; transition: all 0.3s ease; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); }
+    #playButton:hover { background-color: rgba(0, 0, 90, 0.8); transform: translateX(-50%) scale(1.05); }
+    #userIcon { position: fixed; bottom: 20px; left: 25px; width: 70px; height: 70px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; border: 2px solid #00bfff; }
+    #userIcon:hover { transform: scale(1.1); border-color: white; }
+    #adminPanel { position: fixed; top: 0; right: 0; height: 100vh; width: 220px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(6px); padding: 20px; box-shadow: -2px 0 10px rgba(0, 0, 0, 0.4); display: none; flex-direction: column; color: white; text-align: left; }
+    #adminPanel h3 { text-align: center; margin-bottom: 20px; }
+    .toggle { display: flex; justify-content: space-between; margin: 10px 0; background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 10px; }
+    .toggle button { background: rgba(0, 0, 100, 0.6); border: none; color: white; border-radius: 8px; cursor: pointer; padding: 5px 10px; transition: all 0.3s ease; }
+    .toggle button:hover { background: rgba(0, 0, 150, 0.8); }
+    #instancePanel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70%; height: 70%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border-radius: 20px; display: none; flex-direction: column; align-items: center; justify-content: start; padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
+    #instancePanel h2 { margin-bottom: 20px; }
+    .instance-gallery { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+    .instance-item { width: 120px; height: 120px; border-radius: 15px; background-color: rgba(0, 0, 0, 0.3); border: 2px solid transparent; cursor: pointer; transition: all 0.3s ease; }
+    .instance-item:hover { background-color: rgba(0, 0, 0, 0.6); border: 2px solid #00bfff; transform: scale(1.05); }
+    #closeInstancePanel { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; background: none; border: none; color: white; }
+    #confirmPanel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); border-radius: 15px; padding: 25px; display: none; flex-direction: column; align-items: center; }
+    #confirmPanel p { margin-bottom: 20px; }
+    .confirm-buttons button { margin: 0 10px; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease; }
+    .btn-accept { background-color: #00b200; color: white; }
+    .btn-cancel { background-color: #555; color: white; }
   </style>
+  /* 🔥 Adaptación para móviles (sin romper tu diseño actual) */
+@media only screen and (orientation: portrait) {
+  body::before {
+    content: "Por favor gira tu dispositivo para usar el launcher";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    text-align: center;
+    padding: 20px;
+  }
+}
+
+/* 🔥 Ajustes cuando está horizontal: todo se adapta sin mover nada existente */
+@media only screen and (max-width: 900px) and (orientation: landscape) {
+  #logo {
+    width: 280px;
+    margin-top: 30px;
+  }
+  #event-logo {
+    width: 260px;
+    margin-top: 40px;
+  }
+  #playButton {
+    padding: 14px 70px;
+    font-size: 18px;
+    bottom: 40px;
+  }
+  #userIcon {
+    width: 55px;
+    height: 55px;
+  }
+  .event-panel {
+    width: 90px;
+  }
+  .event-icon {
+    width: 65px;
+    height: 65px;
+  }
+  #instancePanel {
+    width: 85%;
+    height: 75%;
+  }
+}
 </head>
 <body>
+  <img id="logo" src="logo_principal.png" alt="Ethernal Client" />
+  <img id="event-logo" src="" alt="Evento" />
+  <div class="event-panel">
+    <button id="addInstance">+</button>
+    <div class="event-selector" id="eventSelector"></div>
+  </div>
+  <button id="playButton">JUGAR</button>
+  <img id="userIcon" src="usuario.png" alt="Usuario" />
 
-  <div class="panel">
-    <img src="logo.png" alt="Logo ETHERNAL" class="logo" />
-    <h1>Launcher ETHERNAL</h1>
+  <div id="instancePanel">
+    <h2>Instancias</h2>
+    <button id="closeInstancePanel">✖</button>
+    <div id="instanceContent" class="instance-gallery"></div>
+  </div>
 
-    <div class="server-option" onclick="selectServer('pesadilla')">
-      <img src="corazon.png" alt="Pesadilla Hardcore" />
-      <span>Pesadilla Hardcore</span>
+  <div id="confirmPanel">
+    <p>¿Quieres añadir esta instancia al panel de eventos?</p>
+    <div class="confirm-buttons">
+      <button class="btn-accept">Aceptar</button>
+      <button class="btn-cancel">Cancelar</button>
     </div>
+  </div>
 
-    <div class="server-option" onclick="selectServer('build')">
-      <img src="buildbattle.png" alt="Build Ethernal Battle" />
-      <span>Build Ethernal Battle</span>
-    </div>
-
-    <button class="play-button" onclick="startGame()">Iniciar Juego</button>
-    <div class="loading-bar" id="loadingBar"></div>
+  <div id="adminPanel">
+    <h3>Panel Admin</h3>
+    <div class="toggle"><span>Pesadilla</span><button id="togglePesadilla">ON</button></div>
+    <div class="toggle"><span>Build</span><button id="toggleBuild">ON</button></div>
+    <div class="toggle"><span>Infección</span><button id="toggleInfeccion">ON</button></div>
   </div>
 
   <script>
-    let selectedServer = null;
+    const events = {
+      pesadilla: { fondo: 'fondo_pesadilla.jpg', logo: 'logo_pesadilla.png', link: 'minecraft://connect/?serverUrl=na81.aternos.me&serverPort=60240', icon: 'pesadilla.png' },
+      build: { fondo: 'fondo_build.jpg', logo: 'logo_build.png', link: 'minecraft://connect/?serverUrl=na81.aternos.me&serverPort=60240', icon: 'build.png' },
+      infeccion: { fondo: 'fondo_infeccion.jpg', logo: 'logo_infeccion.png', link: 'minecraft://connect/?serverUrl=na81.aternos.me&serverPort=60240', icon: 'infeccion.png' }
+    };
 
-    function selectServer(server) {
-      selectedServer = server;
-      document.querySelectorAll('.server-option').forEach(opt => {
-        opt.style.boxShadow = 'none';
+    let selectedEvent = null;
+    let userLoggedIn = false;
+    let isAdmin = false;
+    let activeEvents = JSON.parse(localStorage.getItem("activeEvents")) || [];
+    let eventStatus = JSON.parse(localStorage.getItem("eventStatus")) || { pesadilla: true, build: true, infeccion: true };
+
+    const adminEmails = ["davidfermin987@gmail.com", "davidfermin876@gmail.com"];
+
+    function renderEventPanel() {
+      const container = document.getElementById("eventSelector");
+      container.innerHTML = '';
+      activeEvents.forEach(id => {
+        const ev = events[id];
+        const img = document.createElement("img");
+        img.src = ev.icon;
+        img.className = "event-icon";
+        img.id = id;
+        img.onclick = () => selectEvent(id);
+        container.appendChild(img);
       });
-      event.currentTarget.style.boxShadow = '0 0 25px white';
     }
 
-    function startGame() {
-      if (!selectedServer) {
-        alert("Selecciona un evento primero.");
+    function selectEvent(id) {
+      document.querySelectorAll('.event-icon').forEach(i => i.classList.remove('active'));
+      const icon = document.getElementById(id);
+      icon.classList.add('active');
+      const event = events[id];
+      selectedEvent = event;
+      document.body.classList.add('fade');
+      setTimeout(() => {
+        document.body.style.backgroundImage = `url('${event.fondo}')`;
+        document.body.classList.remove('fade');
+      }, 500);
+      document.getElementById('logo').style.display = 'none';
+      const eventLogo = document.getElementById('event-logo');
+      eventLogo.src = event.logo;
+      eventLogo.style.display = 'block';
+      eventLogo.classList.add('show');
+    }
+
+    const instancePanel = document.getElementById("instancePanel");
+    const confirmPanel = document.getElementById("confirmPanel");
+    let selectedToAdd = null;
+
+    document.getElementById("addInstance").onclick = () => { instancePanel.style.display = "flex"; renderInstances(); };
+    document.getElementById("closeInstancePanel").onclick = () => instancePanel.style.display = "none";
+
+    function renderInstances() {
+      const gallery = document.getElementById("instanceContent");
+      gallery.innerHTML = '';
+      const available = Object.keys(events).filter(e => !activeEvents.includes(e));
+      if (available.length === 0) {
+        gallery.innerHTML = '<p>No hay instancias disponibles</p>';
         return;
       }
-
-      const bar = document.getElementById('loadingBar');
-      bar.style.width = '100%';
-
-      setTimeout(() => {
-        bar.style.width = '0%';
-        if (selectedServer === 'pesadilla') {
-          window.location.href = "minecraft://?addExternalServer=Pesadilla%20Hardcore|na81.aternos.me:60240";
-        } else if (selectedServer === 'build') {
-          window.location.href = "minecraft://?addExternalServer=Build%20Ethernal%20Battle|na81.aternos.me:60240";
-        }
-      }, 2000);
+      available.forEach(id => {
+        const div = document.createElement("img");
+        div.src = events[id].icon;
+        div.className = "instance-item";
+        div.onclick = () => { selectedToAdd = id; confirmPanel.style.display = "flex"; };
+        gallery.appendChild(div);
+      });
     }
-  </script>
 
+    document.querySelector(".btn-cancel").onclick = () => confirmPanel.style.display = "none";
+    document.querySelector(".btn-accept").onclick = () => {
+      if (selectedToAdd) {
+        activeEvents.push(selectedToAdd);
+        localStorage.setItem("activeEvents", JSON.stringify(activeEvents));
+        renderEventPanel();
+        renderInstances();
+        confirmPanel.style.display = "none";
+      }
+    };
+
+    document.getElementById('playButton').onclick = () => {
+      if (!selectedEvent) return alert('Selecciona un evento primero.');
+      const id = Object.keys(events).find(k => events[k] === selectedEvent);
+      if (!eventStatus[id]) return alert('🚫 Evento deshabilitado.');
+      window.location.href = selectedEvent.link;
+    };
+
+    const msalConfig = {
+      auth: { clientId: "93b23afb-1aa3-461d-8fed-a82e6874a235", authority: "https://login.microsoftonline.com/consumers", redirectUri: "https://davidfermin987-stack.github.io/Ethernal-launcher-0.2.1-PC-/" }
+    };
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+    const loginButton = document.getElementById('userIcon');
+    loginButton.onclick = async () => {
+      try {
+        const loginResponse = await msalInstance.loginPopup({ scopes: ["User.Read"] });
+        const account = loginResponse.account;
+        const tokenResponse = await msalInstance.acquireTokenSilent({ scopes: ["User.Read"], account });
+        userLoggedIn = true;
+        isAdmin = adminEmails.includes(account.username.toLowerCase());
+        if (isAdmin) document.getElementById('adminPanel').style.display = 'flex';
+        const graphResponse = await fetch("https://graph.microsoft.com/v1.0/me/photo/$value", { headers: { Authorization: `Bearer ${tokenResponse.accessToken}` } });
+        if (graphResponse.ok) {
+          const blob = await graphResponse.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          document.getElementById('userIcon').src = imageUrl;
+        }
+      } catch (error) { alert("Error al iniciar sesión: " + error.message); }
+    };
+
+    // 🔧 CORRECCIÓN DE BOTONES ON/OFF ADMIN
+    function updateToggleButtons() {
+      Object.keys(eventStatus).forEach(event => {
+        const btn = document.getElementById(`toggle${event.charAt(0).toUpperCase() + event.slice(1)}`);
+        if (!btn) return;
+        btn.textContent = eventStatus[event] ? "ON" : "OFF";
+        btn.style.background = eventStatus[event] ? "rgba(0,100,0,0.6)" : "rgba(100,0,0,0.6)";
+      });
+    }
+
+    ["pesadilla", "build", "infeccion"].forEach(event => {
+      const btn = document.getElementById(`toggle${event.charAt(0).toUpperCase() + event.slice(1)}`);
+      if (btn) {
+        btn.onclick = () => {
+          eventStatus[event] = !eventStatus[event];
+          localStorage.setItem("eventStatus", JSON.stringify(eventStatus));
+          updateToggleButtons();
+        };
+      }
+    });
+
+    updateToggleButtons();
+    renderEventPanel();
+    
+  /* 🔒 Bloqueo de orientación automática */
+  function checkOrientation() {
+    if (window.innerHeight > window.innerWidth) {
+      document.body.classList.add("portrait-warning");
+    } else {
+      document.body.classList.remove("portrait-warning");
+    }
+  }
+
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("load", checkOrientation);
+</script>
 </body>
 </html>
