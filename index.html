@@ -143,7 +143,7 @@
     let userLoggedIn = false;
     let isAdmin = false;
     let activeEvents = JSON.parse(localStorage.getItem("activeEvents")) || [];
-    let eventStatus = JSON.parse(localStorage.getItem("eventStatus")) || { pesadilla: true, build: true, infeccion: true };
+    let eventStatus = JSON.parse(localStorage.getItem("eventStatus")) || { pesadilla: true, build: false, infeccion: false };
 
     const adminEmails = ["davidfermin987@gmail.com", "davidfermin876@gmail.com"];
 
